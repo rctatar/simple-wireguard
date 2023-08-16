@@ -1,9 +1,9 @@
 # simpleguard
-<div>
+```
 Simple Wireguard Setup
 2023-Aug-18 
 Bob Tatar
-</div>
+```
   
 Jason Donenfeld's beautiful creation (wireguard.com) is elegant and efficient. Nevertheless, some 
 people find it to be time-consuming to deploy as a VPN tool in their legacy environments. This project
@@ -21,7 +21,7 @@ This tool assumes the following:
 7. The external clients should remain isolated from eachother.
 8. The base-router has a static, public IP address or a dynamic IP service is used, such as dyndns.org.
 
-<div>
+```
                                 __________
 CLIENT1 --- Client1_Router --- |          |
                                |          | --- Base_Router ------- File Server
@@ -32,7 +32,7 @@ CLIENT3 --- Client3_Router --- |          |                    |--- Workstation1
                                                                |--- Workstation3
                                                                 --- Linux VPN Server
 
-</div>
+```
 To setup such a VPN, each client and the server require a wireguard configuration file.
 There are several piecs of information that are needed and the information must be consistent.
 
