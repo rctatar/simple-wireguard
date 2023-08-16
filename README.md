@@ -1,39 +1,39 @@
 ## simpleguard -- a script to simplify wireguard deployment
 
-Jason Donenfeld's beautiful kernel creation (<https://wireguard.com)>) is elegant and efficient. Nevertheless,
+Jason Donenfeld's beautiful kernel creation (<https://wireguard.com>) is elegant and efficient. Nevertheless,
 some find it to be time-consuming to deploy as a VPN tool in their legacy environments. This project
-is intended to simplify some of the work required for deployment by automating the creation of 
+(a bash script for a debian linux) is intended to simplify some of the work required for deployment by automating the creation of 
 configuration files and installer scripts for devices in a wireguard VPN.
 
 This tool assumes the following:
 
-1. There is a simple, private "base" network behind a NAT firewall/router.
-2. The base network has several devices or services for clients on the base network.
-3. One or more external clients desire to connect to the base network.
-4. A linux machine on the base network will run wireguard to provide a VPN service over a single interface.
-5. The base router is configured to forward a chosen UDP port to the linux machine.
-6. Client routers are configured to allow UDP traffic to the chosen UDP port of the base router.
+1. There is a simple, private *base network* behind a NAT firewall/router.
+2. The *base network* has several devices or services for clients on the base network.
+3. One or more external clients desire to connect to the *base network*.
+4. A linux machine on the *base network* will run wireguard to provide a VPN service over a single interface.
+5. The *base router* is configured to forward a chosen UDP port to the linux machine.
+6. Client routers are configured to allow UDP traffic to the chosen UDP port of the *base router*.
 7. The external clients should remain isolated from eachother.
-8. The base-router has a static, public IP address or a dynamic IP service is used, such as dyndns.org.
+8. The *base router* has a static, public IP address or a dynamic IP service is used, such as dyndns.org.
 
 ```
 Here is a schematic example of such a network with three clients and three workstations 
 in the base network. The remote clients want to use a remote-desktop application on a
-PC at home to access their respective workstations:
+PC at home (behind home routers) to access their respective workstations:
 
                                 __________
-Client1 --- Client1_Router --- |          |
-                               |          | --- Base_Router ------- File Server
-Client2 --- Client2_Router --- | Internet |                    |--- Printer
+Client1 --- Client1 Router --- |          |
+                               |          | --- Base Router ------- File Server
+Client2 --- Client2 Router --- | Internet |                    |--- Printer
                                |          |                    |--- Camera
-Client3 --- Client3_Router --- |          |                    |--- Workstation1
+Client3 --- Client3 Router --- |          |                    |--- Workstation1
                                |__________|                    |--- Workstation2
                                                                |--- Workstation3
                                                                 --- Linux VPN Server
 
 ```
 To setup such a VPN, each client and the server require a wireguard configuration file.
-There are several piecs of information that are needed and the information must be consistent.
+There are several pieces of information that are needed and the information must be consistent.
 
 1. Identify public IP address of base router and provide to client configuration files.
 2. Choose UDP port and provide to all configuration files.
@@ -70,22 +70,42 @@ All parameters can be overridden with command-line options. A list of command-li
 View options at any time by running "./setup_wireguard.sh -h".
 
 
-## Example Usage
+## Usage Examples
 
-For a static public IP, the script can find the required information and make choices for you.
+For a static public IP, the script can find the required information and make choices for you. 
 In this case, the only required parameter is the number of client configuration files to create.
 
 For example, for four clients, just run:
 
-./setup_wireguard.sh -n 4
+    ./setup_wireguard.sh -n 4
 
 This will create a server archive and four client ZIP files.
+
+If you have sudo privileges, you can just run
+
+    ./setup_wireguard.sh -n 4 --install
+
+
+
+To install the server on a debian-based system (i.e. with an apt package manager), extract the server archive and run the install script:
+
+    tar xvzf wg_server.tgz
+    sudo ./install_wg_server.sh
+
 
 If your router uses a dynamic DNS service, you can specify the name with the --endpoint option.
 
 For example:
 
-./setup_wireguard.sh -n 4 --endpoint myname.dyndns.org
+    ./setup_wireguard.sh -n 4 --endpoint myname.dyndns.org --install
+
+
+If your server is multi-homed, you may need to use the --device option:
+
+    ./setup_wireguard.sh -n 4 --endpoint myname.dyndns.org --device eth0
+
+
+
 
 ```
 2023-Aug-16 
