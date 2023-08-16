@@ -87,7 +87,6 @@ For example:
 
 ./setup_wireguard.sh -n 4 --endpoint myname.dyndns.org
 
-
 ```
 2023-Aug-16 
 Bob Tatar
