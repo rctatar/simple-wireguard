@@ -131,4 +131,4 @@ Bob Tatar
 ```
 
 TODO:
-- create self-extracting client files to eliminate need for zip
+- create self-extracting scripts to eliminate need for zip and tar
