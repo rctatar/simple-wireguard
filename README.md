@@ -15,6 +15,7 @@ This tool assumes the following:
 6. Client routers are configured to allow UDP traffic to the chosen UDP port of the *base router*.
 7. The external clients should remain isolated from eachother.
 8. The *base router* has a static, public IP address or a dynamic IP service is used, such as dyndns.org.
+9. Several executables are installed on the server used to generate the files: zip, tar, curl, jq, wg (wireguard-tools)
 
 ```
 Here is a schematic example of such a network with three clients and three workstations 
@@ -75,23 +76,31 @@ View options at any time by running "./setup_wireguard.sh -h".
 For a static public IP, the script can find the required information and make choices for you. 
 In this case, the only required parameter is the number of client configuration files to create.
 
-For example, for four clients, just run:
+### To generate files for server and four clients
+
+Run:
 
     ./setup_wireguard.sh -n 4
 
 This will create a server archive and four client ZIP files.
+
+
+### To generate files for four clients and install in one step
 
 If you have sudo privileges, you can just run
 
     ./setup_wireguard.sh -n 4 --install
 
 
+### To install the server 
 
-To install the server on a debian-based system (i.e. with an apt package manager), extract the server archive and run the install script:
+On a debian-based system (i.e. with an apt package manager), extract the server archive and run the install script:
 
     tar xvzf wg_server.tgz
     sudo ./install_wg_server.sh
 
+
+### To specify a Dynamic DNS name
 
 If your router uses a dynamic DNS service, you can specify the name with the --endpoint option.
 
@@ -100,14 +109,26 @@ For example:
     ./setup_wireguard.sh -n 4 --endpoint myname.dyndns.org --install
 
 
+### To select a specific interface on the server
+
 If your server is multi-homed, you may need to use the --device option:
 
-    ./setup_wireguard.sh -n 4 --endpoint myname.dyndns.org --device eth0
+    ./setup_wireguard.sh -n 4 --endpoint myname.dyndns.org --device eth1
 
 
+### To install clients
+
+1. copy the client zip file to the client
+2. unzip the archive
+3. open a command shell as an administrator
+4. navigate to the directory with the unpacked files
+5. run the batch script (install_wg_client.bat)
 
 
 ```
 2023-Aug-16 
 Bob Tatar
 ```
+
+TODO:
+- create self-extracting client files to eliminate need for zip

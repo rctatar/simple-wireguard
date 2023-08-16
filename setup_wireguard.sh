@@ -85,7 +85,7 @@ while [[ $# -gt 0 ]]; do
  $0 generates wireguard server and client install packages for windows and linux clients.
  Since this obtains default parameters from the current network, it is safest and most
  convenient to run this script on the target server.
- This script requires zip, tar, curl, jq and wg. (wg is in the wireguard-tools package.)
+ This script requires zip, tar, curl, jq, and wg. (wg is in the wireguard-tools package.)
 
 # Required parameter
   -n | --nclients; the number of client configurations to generate; no default value.
@@ -237,7 +237,7 @@ ip6_prefix() {
 }
 
 ## 3. Check for prerequisites
-REQUIRED="wg zip tar curl jq"
+REQUIRED="wg zip tar curl"
 MISSING=""
 for PKG in $REQUIRED; do
   if ! which $PKG > /dev/null; then
@@ -252,7 +252,7 @@ fi
 ## 4. Check for NCLIENTS
 verboseVar NCLIENTS
 if [ -z $NCLIENTS ]; then
-  errorMsg 2 "You must provide the number of clients." a
+  errorMsg 2 "Missing number of clients. Provide with the -n option." a
 fi
 
 ## 5. Check that NCLIENTS < MAX_CLIENTS
@@ -266,27 +266,21 @@ if [ -z $DEVICE ]; then
 # Get public interface
   DEVICE=$(ip route show | grep default | awk '{print $5}')
   if ! [ "$?" = "0" ] ; then
-    errorMsg 5 "Unable to obtain public interface. Provide manually."
+    errorMsg 5 "Unable to obtain public interface. Provide with --device option."
   fi
   verboseVar DEVICE
 fi
 
-## 7. Get local network/netmask for default values
-# Get address from DEVICE
-ADDRESS_LIST=$(ip addr  | grep $DEVICE | grep inet | awk '{print $2}' | head -1)
-NA=$(echo $ADDRESS_LIST | wc -w)
-
-# Confirm that there is a unique device.
-if [ "$NA" -eq 1 ]; then
-  MY_ADDRESS=$(echo $ADDRESS_LIST | cut -d'/' -f1)
-  MY_NETWORKMASK=$(ip -j route | jq --arg D $DEVICE --arg A $MY_ADDRESS '.[] | select(.dev == $D ) | select(.dst != "default") | select(.prefsrc == $A )' | jq -r .dst)
-fi
+## 7. Get local network/netmask for default values from DEVICE
+MY_ADDRESS=$(ip -j addr | jq -c --arg D $DEVICE '.[] | select(.ifname == $D)' | jq -r --arg D $DEVICE '.addr_info | .[] | select (.label == $D) | .local')
+MY_NETWORKMASK=$(ip -j route | jq -r --arg D $DEVICE --arg A $MY_ADDRESS '.[] | select(.dev == $D ) | select(.dst != "default") | select(.prefsrc == $A ) | .dst')
+verboseVar MY_NETWORKMASK
 
 ## 8. Check for endpoint address
 if [ -z $ENDPOINT ]; then
   ENDPOINT=$(curl icanhazip.com 2>/dev/null)
   if ! [ "$?" = "0" ] ; then
-    errorMsg 4 "Unable to obtain public IP. Provide enpoint manually."
+    errorMsg 4 "Unable to obtain public IP. Provide with --endpoint option." a
   fi
 fi
 verboseVar ENDPOINT
@@ -294,14 +288,14 @@ verboseVar ENDPOINT
 ## 9. Check for endpoint port
 verboseVar WG_PORT
 if [ -z $WG_PORT ]; then
-  errorMsg 5 "Missing wireguard port."
+  errorMsg 5 "Missing wireguard port. Provide with --port option." a
 fi
 
 ## 10. Check for remote network base; use mine as default
 if [ -z $REMOTE_NETWORK ]; then
   REMOTE_NETWORK=$(echo $MY_NETWORKMASK | cut -d'/' -f1)
   if [ -z $REMOTE_NETWORK ]; then
-    errorMsg 5 "Missing remote network address; unable to identify local network. Assign manually."
+    errorMsg 5 "Missing remote network address; unable to identify local network. Provide with --network option." a
   fi
 fi
 verboseVar REMOTE_NETWORK
@@ -310,20 +304,20 @@ verboseVar REMOTE_NETWORK
 if [ -z $REMOTE_NETMASK ]; then
   REMOTE_NETMASK=$(echo $MY_NETWORKMASK | cut -d'/' -f2)
   if [ -z "$REMOTE_NETMASK" ]; then
-    errorMsg 5 "Missing remote netmask; unable to identify local netmask. Assign manually."
+    errorMsg 5 "Missing remote netmask; unable to identify local netmask. Provide with --netmask option." a
   fi
 fi
 verboseVar REMOTE_NETMASK
 
 ## 12. Check for VPN base network
 if [ -z $VPN_BASE ]; then
-  errorMsg 8 "Missing VPN base network setting." a
+  errorMsg 8 "Missing VPN base network setting. Provide with --vpnb option." a
 fi
 verboseVar VPN_BASE
 
 ## 13. Check for VPN netmask
 if [ -z $VPN_MASK ]; then
-  errorMsg 9 "Missing VPN network mask setting." a
+  errorMsg 9 "Missing VPN network mask setting. Provide with --vpnm option." a
 fi
 verboseVar VPN_MASK
 
@@ -331,14 +325,14 @@ verboseVar VPN_MASK
 if [ -z $VPN_SERVER ]; then
   VPN_SERVER=$(Num_To_IP $(( $(IP_To_Num $VPN_BASE) + 1)) )
   if ! [ "$?" = "0" ]; then
-    errorMsg 10 "Unable to set VPN Server address." a
+    errorMsg 10 "Unable to set VPN Server address. Provide with --vpns option." a
   fi
 fi
 verboseVar VPN_SERVER
 
 ## 15. Check that VPN Server is within VPN Subnet
 if ! checkIP $VPN_SERVER ; then
-  errorMsg 12 "$VPN_SERVER not in subnet $VPN_BASE/$VPN_MASK."
+  errorMsg 12 "$VPN_SERVER not in subnet $VPN_BASE/$VPN_MASK. Fix server or network address."
 fi
 
 ## 16. Create wireguard private key
