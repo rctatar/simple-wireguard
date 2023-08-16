@@ -7,7 +7,7 @@ Bob Tatar
   
 Jason Donenfeld's beautiful creation (wireguard.com) is elegant and efficient. Nevertheless, some 
 people find it to be time-consuming to deploy as a VPN tool in their legacy environments. This project
-is intended to simplify some of the work required for deployment by automating the creation of 
+(a bash script) is intended to simplify some of the work required for deployment by automating the creation of 
 configuration files and installer scripts for devices in a wireguard VPN.
 
 This tool assumes the following:
