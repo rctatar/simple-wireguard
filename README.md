@@ -1,4 +1,4 @@
-# simpleguard -- a script to simplify wireguard deployment
+## simpleguard -- a script to simplify wireguard deployment
 
 Jason Donenfeld's beautiful kernel creation (<https://wireguard.com)>) is elegant and efficient. Nevertheless,
 some find it to be time-consuming to deploy as a VPN tool in their legacy environments. This project
