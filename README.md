@@ -72,14 +72,14 @@ All parameters can be overridden with command-line options. A list of command-li
 View these options at any time by running "./setup_wireguard.sh -h".
 
 NOTES
-N1. This can be the IP address or a domain name. For most systems, it is convenient to use a domain name with a dynamic DNS service.
-N2. This defaults to 51820/udp, but may need to change if you corporate firewall rules require servers at low port numbers.
-N3. This is usually an arbitrary choice, but is most convenient if the address does not overlap address space in the client or server LANs. The default is 10.10.0.0.
-N4. This is also somewhat artibtrary, but convenient to manage if it is thought of as part of the "VPN network" even though the links are point-to-point.
-N5. This is pre-set by the base LAN administrator. It can get messy if the client home network address ranges overlap the base network.
-N6. The script picks "sensible" values if the assumptions are met.
-N7. These are re-generated everytime the script is run.
-N8. Ditto.
+- N1. This can be the IP address or a domain name. For most systems, it is convenient to use a domain name with a dynamic DNS service.
+- N2. This defaults to 51820/udp, but may need to change if you corporate firewall rules require servers at low port numbers.
+- N3. This is usually an arbitrary choice, but is most convenient if the address does not overlap address space in the client or server LANs. The default is 10.10.0.0.
+- N4. This is also somewhat artibtrary, but convenient to manage if it is thought of as part of the "VPN network" even though the links are point-to-point.
+- N5. This is pre-set by the base LAN administrator. It can get messy if the client home network address ranges overlap the base network.
+- N6. The script picks "sensible" values if the assumptions are met.
+- N7. These are re-generated everytime the script is run.
+- N8. Ditto.
 
 ## Usage Examples
 
