@@ -13,9 +13,10 @@ This tool assumes the following:
 4. A linux machine on the *base network* will run wireguard to provide a VPN service over a single interface.
 5. The *base router* is configured to forward a chosen UDP port to the linux machine.
 6. Client routers are configured to allow UDP traffic to the chosen UDP port of the *base router*.
-7. The external clients should remain isolated from eachother.
-8. The *base router* has a static, public IP address or a dynamic IP service is used, such as dyndns.org.
-9. Several executables are installed on the server used to generate the files: zip, tar, curl, jq, wg (wireguard-tools)
+7. Client network and base network address ranges do not overlap.
+8. The external clients should remain isolated from eachother.
+9. The *base router* has a static, public IP address or a dynamic DNS service is used, such as dyndns.org.
+10. Several executables are already installed on the server used to generate the files: zip, tar, curl, jq, wg (wireguard-tools)
 
 ```
 Here is a schematic example of such a network with three clients and three workstations 
@@ -36,14 +37,14 @@ Client3 --- Client3 Router --- |          |                    |--- Workstation1
 To setup such a VPN, each client and the server require a wireguard configuration file.
 There are several pieces of information that are needed and the information must be consistent.
 
-1. Identify public IP address of base router and provide to client configuration files.
-2. Choose UDP port and provide to all configuration files.
-3. Choose VPN address for server and provide to all configuration files.
-4. Choose VPN address for each client and provide to the client and server configuration files.
-5. Identify base network LAN address and netmask and provide to the client configuration files.
-6. Generate forwarding and firewall rules for server configuration file.
-7. Generate server key-pair and provide server public key to client configuration files.
-8. Generate client key-pairs and provide client public keys to server configuration file.
+1. Identify public IP address of base router and provide to client configuration files. Note N1.
+2. Choose UDP port and provide to all configuration files. Note N2.
+3. Choose VPN address for server and provide to all configuration files. Note N3.
+4. Choose VPN address for each client and provide to the client and server configuration files. Note N4.
+5. Identify base network LAN address and netmask and provide to the client configuration files. Note N5.
+6. Generate forwarding and firewall rules for server configuration file. Note N6.
+7. Generate server key-pair and provide server public key to client configuration files. Note N7.
+8. Generate client key-pairs and provide client public keys to server configuration file. Note N8.
 
 The script attempts to make sensible choices. If run on the target server in the target location,
 it collects required information about the local network. 
@@ -57,19 +58,28 @@ All parameters can be overridden with command-line options. A list of command-li
   --network ; remote network base address (defaults to LAN network value)
   --netmask ; remote network netmask (defaults to LAN mask value; use CIDR notation, e.g. 24 instead of 255.255.255.0)
   --device ; LAN network device (defaults to default route device on LAN)
-  --vpnb ; IPv4 VPN network base address (defaults to 10.10.1.0)
+  --vpnb ; IPv4 VPN network base address (defaults to 10.10.0.0)
   --vpnm ; IPv4 VPN netmask (defaults to 24; use CIDR notation -- not really used as a mask since
            VPN connections are point-to-point.
   --vpns ; IPv4 VPN server address (defaults to VPN network base address + 1)
   --install ; Install the generated server configuration on this machine (needs sudo privileges.)
   --what ; Lists the sequence of tasks performed.
-  -d | --development ; use during development to limit account lockout
+  -d | --development ; use during development for quick access to unpackaged files.
   -v | --verbose ; used mostly for debugging
   -h | --help ; this output
 ```
 
-View options at any time by running "./setup_wireguard.sh -h".
+View these options at any time by running "./setup_wireguard.sh -h".
 
+NOTES
+N1. This can be the IP address or a domain name. For most systems, it is convenient to use a domain name with a dynamic DNS service.
+N2. This defaults to 51820/udp, but may need to change if you corporate firewall rules require servers at low port numbers.
+N3. This is usually an arbitrary choice, but is most convenient if the address does not overlap address space in the client or server LANs. The default is 10.10.0.0.
+N4. This is also somewhat artibtrary, but convenient to manage if it is thought of as part of the "VPN network" even though the links are point-to-point.
+N5. This is pre-set by the base LAN administrator. It can get messy if the client home network address ranges overlap the base network.
+N6. The script picks "sensible" values if the assumptions are met.
+N7. These are re-generated everytime the script is run.
+N8. Ditto.
 
 ## Usage Examples
 
