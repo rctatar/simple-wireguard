@@ -96,7 +96,7 @@ while [[ $# -gt 0 ]]; do
   --network ; remote network base address (defaults to LAN network value)
   --netmask ; remote network netmask (defaults to LAN mask value; use CIDR notation, e.g. 24 instead of 255.255.255.0)
   --device ; LAN network device (defaults to default route device on LAN)
-  --vpnb ; IPv4 VPN network base address (defaults to 10.10.1.0)
+  --vpnb ; IPv4 VPN network base address (defaults to 10.10.0.0)
   --vpnm ; IPv4 VPN netmask (defaults to 24; use CIDR notation -- not really used as a mask since
            VPN connections are point-to-point.
   --vpns ; IPv4 VPN server address (defaults to VPN network base address + 1)
