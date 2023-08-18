@@ -415,7 +415,7 @@ wg-installer
 _EOF_
 
 ## 21. Create Linux server install script
-SERVER_INSTALL_FILE=install_wg_server.sh
+SERVER_INSTALL_FILE=./install_wg_server.sh
 cat > $SERVER_INSTALL_FILE << _EOF_
 #!/bin/bash
 # Run as root
@@ -484,6 +484,8 @@ AllowedIPs = $VPN_CLIENT_ADDRESS/32
 _EOF_
 
 done
+chmod +x $SERVER_INSTALL_FILE
+
 # End Create Client configurations
 
 ## 24. Install or package server files
