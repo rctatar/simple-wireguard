@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script to setup wireguard server
-# 2023-Aug-15 RCT V1.1
+# 2023-Aug-18 RCT V1.2
 
 # Specs for setup_wireguard.sh
 # 1. Self-contained bash script to generate server and client install packages.
@@ -415,8 +415,8 @@ wg-installer
 _EOF_
 
 ## 21. Create Linux server install script
-CONFIG_FILE=install_wg_server.sh
-cat > $CONFIG_FILE << _EOF_
+SERVER_INSTALL_FILE=install_wg_server.sh
+cat > $SERVER_INSTALL_FILE << _EOF_
 #!/bin/bash
 # Run as root
 
@@ -425,7 +425,7 @@ apt update
 apt install wireguard -y
 
 # Move server config file
-SERVER_CONFIG=\$(ls wg0_server.conf | tail -1)
+SERVER_CONFIG=\$(ls $SERVER_CONFIG_FILE | tail -1)
 mv \$SERVER_CONFIG /etc/wireguard/wg0.conf
 chmod go= /etc/wireguard/wg0.conf
 
@@ -487,15 +487,15 @@ done
 # End Create Client configurations
 
 ## 24. Install or package server files
-SERVER_ARCHIVE_FILES="install_wg_server.sh $SERVER_CONFIG_FILE"
+SERVER_ARCHIVE_FILES="$SERVER_INSTALL_FILE $SERVER_CONFIG_FILE"
 if [ "$INSTALL" = "true" ]; then
-  sudo ./install_wg_server.sh
+  sudo $SERVER_INSTALL_FILE
   if ! [ "$?" = "0" ]; then
     errorMsg 21 "Unable to install server package."
   fi
 
   if [ "$DEVELOPMENT" = "true" ]; then
-    rm $SERVER_ARCHIVE_FILES
+    rm $SERVER_INSTALL_FILE
   fi
 else
   tar ${VERBOSE}czf wg_server.tgz $SERVER_ARCHIVE_FILES
